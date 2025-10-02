@@ -11,6 +11,7 @@ pub enum Amount {
         issuer: String,
     },
     Drops(String),
+    Other(serde_json::Value),
 }
 
 impl Default for Amount {
@@ -52,6 +53,7 @@ impl Amount {
         match self {
             Amount::Drops(value) => value.parse::<f64>().unwrap() / 1_000_000.0,
             Amount::Issued { value, .. } => value.parse::<f64>().unwrap(),
+            Amount::Other(value) => value.as_f64().unwrap_or(0.0),
         }
     }
 }

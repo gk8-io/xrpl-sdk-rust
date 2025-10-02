@@ -113,6 +113,9 @@ impl Serializer {
                 currency,
                 issuer,
             } => self.push_issued_amount(value, currency, issuer),
+            Amount::Other(value) => {
+                self.push_drops_amount(0);
+            }
         }
     }
 
