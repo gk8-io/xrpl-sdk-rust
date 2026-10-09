@@ -64,6 +64,7 @@ pub enum TransactionType {
     NFTokenModify = 61,
     PermissionedDomainSet = 62,
     PermissionedDomainDelete = 63,
+    DelegateSet = 64,
     EnableAmendment = 100,
     SetFee = 101,
     UNLModify = 102,
