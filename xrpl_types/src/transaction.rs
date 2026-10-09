@@ -65,9 +65,36 @@ pub enum TransactionType {
     PermissionedDomainSet = 62,
     PermissionedDomainDelete = 63,
     DelegateSet = 64,
+    VaultCreate = 65,
+    VaultSet = 66,
+    VaultDelete = 67,
+    VaultDeposit = 68,
+    VaultWithdraw = 69,
+    VaultClawback = 70,
+    Batch = 71,
+    LoanBrokerSet = 74,
+    LoanBrokerDelete = 75,
+    LoanBrokerCoverDeposit = 76,
+    LoanBrokerCoverWithdraw = 77,
+    LoanBrokerCoverClawback = 78,
+    LoanSet = 80,
+    LoanDelete = 81,
+    LoanManage = 82,
+    LoanPay = 84,
+    ConfidentialMPTConvert = 85,
+    ConfidentialMPTMergeInbox = 86,
+    ConfidentialMPTConvertBack = 87,
+    ConfidentialMPTSend = 88,
+    ConfidentialMPTClawback = 89,
+    SponsorshipTransfer = 90,
+    SponsorshipSet = 91,
     EnableAmendment = 100,
     SetFee = 101,
     UNLModify = 102,
+    /// Fallback for transaction types this SDK doesn't know about yet, so that
+    /// new XRPL amendments don't break deserialization of whole ledgers.
+    #[serde(other)]
+    Unknown = 255,
 }
 
 pub type DropsAmount = u64;
@@ -304,4 +331,28 @@ impl Transaction {
     }
 
     // TODO: with_fee
+}
+
+#[cfg(test)]
+mod transaction_type_tests {
+    use super::TransactionType;
+
+    #[test]
+    fn deserializes_recent_types() {
+        for (name, expected) in [
+            ("DelegateSet", TransactionType::DelegateSet),
+            ("Batch", TransactionType::Batch),
+            ("VaultCreate", TransactionType::VaultCreate),
+            ("LoanPay", TransactionType::LoanPay),
+        ] {
+            let t: TransactionType = serde_json::from_str(&format!("\"{name}\"")).unwrap();
+            assert_eq!(t, expected);
+        }
+    }
+
+    #[test]
+    fn unknown_type_falls_back() {
+        let t: TransactionType = serde_json::from_str("\"SomeFutureTxType\"").unwrap();
+        assert_eq!(t, TransactionType::Unknown);
+    }
 }
